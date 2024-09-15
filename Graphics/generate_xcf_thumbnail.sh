@@ -2,13 +2,13 @@
 #
 # Requires gimp, imagemagick.
 #
-# Example usage: bash ~/bin/generate_xcf_thumbnail file.xcf
+# Example usage: bash ~/bin/generate_xcf_thumbnail.sh file.xcf
 #
 # Thunar Action Setup
 #
 # Name: Create XCF Thumbnail
 # Description: Generate a thumbnail for XCF files
-# Command: bash ~/bin/generate_xcf_thumbnail %F
+# Command: bash ~/bin/generate_xcf_thumbnail.sh %F
 # Appearance Conditions
 # File Pattern: *.xcf
 # Appears if selection contains: Image Files 

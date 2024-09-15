@@ -1,11 +1,11 @@
 #!/bin/bash
 # Requires jpegoptim, imagemagick.
 #
-# Example usage: bash ~/bin/watermark input.png '~/watermark.png'
+# Example usage: bash ~/bin/watermark.sh input.png '~/watermark.png'
 #
 # Thunar Action Setup
 #
-# Command: bash ~/bin/watermark %n '/path-to/watermark.png'
+# Command: bash ~/bin/watermark.sh %n '/path-to/watermark.png'
 # Use Startup Notification: Checked
 # Appearance Conditions
 # File Pattern: *
