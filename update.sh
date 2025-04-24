@@ -9,13 +9,19 @@ for dir in */; do
     if [[ -d "$dir" ]]; then
         # Traverse each file within the subdirectory
         for file in "$dir"*; do
-            # Check if it's a regular file
-            if [[ -f "$file" ]]; then
+            # Check if it's a regular file and not already a zip
+            if [[ -f "$file" && ! "$file" =~ \.zip$ ]]; then
                 # Get the filename without the path
                 FILE_NAME=$(basename "$file")
                 
                 # Define the path for the zip file (in the same directory as the original file)
                 ZIP_FILE="${dir}${FILE_NAME}.zip"
+                
+                # Check if the zip file already exists
+                if [[ -f "$ZIP_FILE" ]]; then
+                    echo "File $file is already zipped into ${ZIP_FILE}"
+                    continue  # Skip to the next file
+                fi
                 
                 # Move into the directory to zip the file without the path
                 (
@@ -33,4 +39,3 @@ for dir in */; do
         done
     fi
 done
-
