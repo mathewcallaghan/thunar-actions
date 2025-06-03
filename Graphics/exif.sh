@@ -6,7 +6,7 @@
 #
 # Name: Create EXIF date
 # Description: Set / change EXIF date for images
-# Command: xfce4-terminal --title "Set EXIF Date" --command "bash exif %F"
+# Command: xfce4-terminal --title "Set EXIF Date" --command "bash exif.sh %F"
 # Appearance Conditions
 # File Pattern: *
 # Appears if selection contains: Image Files 
