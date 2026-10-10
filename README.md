@@ -22,7 +22,7 @@ You can install all dependencies required across all scripts using apt:
 
 1. **Clone or download the repository:**
 
-    git clone https://github.com/<your-username>/<your-repo-name>.git
+    git clone https://github.com/mathewcallaghan/thunar-actions.git
     cd <your-repo-name>
 
 2. **Copy scripts to your local user executable path:**
