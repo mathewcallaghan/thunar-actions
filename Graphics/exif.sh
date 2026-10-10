@@ -2,63 +2,61 @@
 
 # Script to set EXIF date for an image file(s).
 #
-# Requires 'exiftool'.  Install with: sudo apt install libimage-exiftool-perl
-#
-# Name: Create EXIF date
-# Description: Set / change EXIF date for images
-# Command: xfce4-terminal --title "Set EXIF Date" --command "bash exif.sh %F"
-# Appearance Conditions
-# File Pattern: *
-# Appears if selection contains: Image Files 
-
+# Requires:
+#   sudo apt install libimage-exiftool-perl libnotify-bin
 
 # Check if exiftool is installed
 if ! command -v exiftool &> /dev/null; then
-  echo "Error: exiftool is not installed."
-  echo "Please install it using: sudo apt install libimage-exiftool-perl"
+  notify-send -u critical "EXIF Script Error" "exiftool is not installed. Please install 'libimage-exiftool-perl'."
   exit 1
 fi
 
-# Validate that at least one file exists and is a regular file.
+# Validate that files were passed
 if [ "$#" -eq 0 ]; then
-  echo "Error: No files specified."
+  notify-send -u critical "EXIF Script Error" "No files specified."
   exit 1
 fi
 
-# Prompt the user to input a new date or use today's date
+# Prompt user for date
 read -p "Enter 'today' to use today's date or enter a new date (YYYY:MM:DD): " new_date
 
 if [ "$new_date" == "today" ]; then
-    # Get today's date in YYYY:MM:DD format
     new_date=$(date +'%Y:%m:%d')
 else
-    # Validate the date format using regex.
     if ! [[ "$new_date" =~ ^[0-9]{4}:[0-9]{2}:[0-9]{2}$ ]]; then
-      echo "Error: Invalid date format. Please use YYYY:MM:DD."
+      notify-send -u critical "EXIF Script Error" "Invalid date format. Expected YYYY:MM:DD."
       exit 1
     fi
 fi
 
+timestamp="$new_date 00:00:00"
+success_count=0
+fail_count=0
+
 for image_file in "$@"; do
-  # Check if the file exists and is a regular file.
   if [ ! -f "$image_file" ]; then
-    echo "Warning: File '$image_file' does not exist or is not a regular file. Skipping..."
+    ((fail_count++))
     continue
   fi
 
-  # Construct the exiftool command. Add time to match exiftool's expected format.
-  exiftool_command="exiftool -overwrite_original -DateTimeOriginal=\"$new_date 00:00:00\" -ModifyDate=\"$new_date 00:00:00\" \"$image_file\""
-
-  # Execute the exiftool command and display the output.
-  echo "Setting EXIF date for '$image_file' to $new_date..."
-  eval "$exiftool_command"  # Use eval cautiously, but necessary here due to variable expansion.
-
-  # Check the exit code of exiftool.
-  if [ $? -eq 0 ]; then
-    echo "EXIF date successfully updated for '$image_file'."
+  # -m bypasses minor metadata warnings like recursive IFD0 pointers
+  if exiftool -m -overwrite_original \
+       -DateTimeOriginal="$timestamp" \
+       -CreateDate="$timestamp" \
+       -ModifyDate="$timestamp" \
+       "$image_file" &> /dev/null; then
+    ((success_count++))
   else
-    echo "Error: EXIF date update failed for '$image_file'."
+    ((fail_count++))
   fi
 done
+
+# Send system alert and exit immediately (terminal closes)
+if [ "$fail_count" -eq 0 ]; then
+  notify-send -i emblem-default "EXIF Tool" "Successfully updated $success_count file(s) to $new_date."
+else
+  # -u critical keeps the notification pinned until clicked/dismissed
+  notify-send -u critical -i dialog-warning "EXIF Tool" "Done with warnings: $success_count updated, $fail_count failed."
+fi
 
 exit 0
